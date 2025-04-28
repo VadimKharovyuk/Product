@@ -25,6 +25,7 @@ public class Category {
     private String description;
 
     private String imageUrl;
+    private String imageId;
 
     @Column(unique = true)
     private String slug; // URL-friendly имя (например, "electronics")

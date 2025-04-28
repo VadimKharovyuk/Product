@@ -25,6 +25,7 @@ public class Brand {
     private String description;
 
     private String logoUrl;
+    private String imageId;
 
     @Column(unique = true)
     private String slug;
