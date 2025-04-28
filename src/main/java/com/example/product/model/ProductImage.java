@@ -1,8 +1,12 @@
 package com.example.product.model;
 
+import com.example.product.enums.ImageType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product_images")
@@ -20,6 +24,10 @@ public class ProductImage {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+     @Enumerated(EnumType.STRING)
+    private ImageType imageType = ImageType.GALLERY;
+
+
     @NotBlank
     private String imageUrl;
 
@@ -29,7 +37,9 @@ public class ProductImage {
 
     private Integer sortOrder;
 
-    private boolean isMain = false;
 
+
+    @CreatedDate
+    private LocalDateTime uploadedAt;
 
 }
