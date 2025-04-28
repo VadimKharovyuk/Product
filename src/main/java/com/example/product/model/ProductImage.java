@@ -23,9 +23,13 @@ public class ProductImage {
     @NotBlank
     private String imageUrl;
 
+    private String imageId;
+
     private String alt;
 
     private Integer sortOrder;
 
     private boolean isMain = false;
+
+
 }
