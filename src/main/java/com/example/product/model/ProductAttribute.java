@@ -22,8 +22,10 @@ public class ProductAttribute {
     private Product product;
 
     @NotBlank
-    private String name; // например, "Color", "Size", "Material"
-
+    private String Color;
     @NotBlank
-    private String value; // например, "Red", "XL", "Cotton"
+    private String Size;
+    @NotBlank
+    private String Material;
+
 }

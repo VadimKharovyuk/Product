@@ -65,9 +65,12 @@ public class Product {
 
     private Integer stockQuantity;
 
-    private BigDecimal weight;
+    private Double weight;   ///масса
 
-    private String dimensions; // Можно разбить на height, width, depth
+    // Размеры в миллиметрах или другой удобной единице измерения
+    private Double height;
+    private Double width;
+    private Double depth;   ///глубина
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status = ProductStatus.ACTIVE;
