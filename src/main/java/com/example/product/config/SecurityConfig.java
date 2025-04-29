@@ -30,7 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // Защищенные эндпоинты (требуют аутентификации)
-                        .requestMatchers("/api/products/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/products/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
