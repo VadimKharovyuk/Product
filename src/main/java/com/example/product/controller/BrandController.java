@@ -28,58 +28,6 @@ public class BrandController {
 
     private final BrandService brandService;
 
-    // Публичные эндпоинты для брендов
-
-    @GetMapping("/public/brands")
-    public ResponseEntity<List<BrandListDTO>> getAllPublicBrands(
-            @RequestParam(required = false) Boolean active) {
-
-        // Для публичного API всегда возвращаем только активные бренды
-        List<BrandListDTO> brands = brandService.getBrandsByActive(active != null ? active : true);
-        return ResponseEntity.ok(brands);
-    }
-
-    @GetMapping("/public/brands/paginated")
-    public ResponseEntity<Page<BrandListDTO>> getPaginatedPublicBrands(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.Direction.DESC : Sort.Direction.ASC;
-
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sortBy));
-        Page<BrandListDTO> brands = brandService.getBrandsPaginated(pageRequest);
-
-        return ResponseEntity.ok(brands);
-    }
-
-    @GetMapping("/public/brands/search")
-    public ResponseEntity<List<BrandListDTO>> searchPublicBrands(
-            @RequestParam String query) {
-        return ResponseEntity.ok(brandService.searchBrands(query));
-    }
-
-    @GetMapping("/public/brands/premium")
-    public ResponseEntity<List<BrandListDTO>> getPublicPremiumBrands() {
-        return ResponseEntity.ok(brandService.getBrandsByPremium(true));
-    }
-
-    @GetMapping("/public/brands/{id}")
-    public ResponseEntity<BrandDTO> getPublicBrandById(@PathVariable Long id) {
-        return brandService.getBrandById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/public/brands/slug/{slug}")
-    public ResponseEntity<BrandDTO> getPublicBrandBySlug(@PathVariable String slug) {
-        return brandService.getBrandBySlug(slug)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
     // Административные эндпоинты для брендов (требуют аутентификации и роли ADMIN)
 
     @GetMapping("/admin/brands")
@@ -168,4 +116,60 @@ public class BrandController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
+    // Публичные эндпоинты для брендов
+
+    @GetMapping("/public/brands")
+    public ResponseEntity<List<BrandListDTO>> getAllPublicBrands(
+            @RequestParam(required = false) Boolean active) {
+
+        // Для публичного API всегда возвращаем только активные бренды
+        List<BrandListDTO> brands = brandService.getBrandsByActive(active != null ? active : true);
+        return ResponseEntity.ok(brands);
+    }
+
+    @GetMapping("/public/brands/paginated")
+    public ResponseEntity<Page<BrandListDTO>> getPaginatedPublicBrands(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<BrandListDTO> brands = brandService.getBrandsPaginated(pageRequest);
+
+        return ResponseEntity.ok(brands);
+    }
+
+    @GetMapping("/public/brands/search")
+    public ResponseEntity<List<BrandListDTO>> searchPublicBrands(
+            @RequestParam String query) {
+        return ResponseEntity.ok(brandService.searchBrands(query));
+    }
+
+    @GetMapping("/public/brands/premium")
+    public ResponseEntity<List<BrandListDTO>> getPublicPremiumBrands() {
+        return ResponseEntity.ok(brandService.getBrandsByPremium(true));
+    }
+
+    @GetMapping("/public/brands/{id}")
+    public ResponseEntity<BrandDTO> getPublicBrandById(@PathVariable Long id) {
+        return brandService.getBrandById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/public/brands/slug/{slug}")
+    public ResponseEntity<BrandDTO> getPublicBrandBySlug(@PathVariable String slug) {
+        return brandService.getBrandBySlug(slug)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+
 }
