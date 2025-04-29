@@ -28,6 +28,7 @@ public class BrandController {
 
     private final BrandService brandService;
 
+
     // Административные эндпоинты для брендов (требуют аутентификации и роли ADMIN)
 
     @GetMapping("/admin/brands")
