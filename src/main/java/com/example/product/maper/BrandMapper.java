@@ -136,8 +136,6 @@ public class BrandMapper {
         if (request.getSortOrder() != null) {
             brand.setSortOrder(request.getSortOrder());
         }
-
-        // Обновляем дату изменения
         brand.setUpdatedAt(LocalDateTime.now());
     }
 }
