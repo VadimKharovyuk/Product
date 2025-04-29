@@ -80,6 +80,7 @@ public class Product {
     @CreatedDate
     private LocalDateTime createdAt;
 
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
