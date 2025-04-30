@@ -46,12 +46,12 @@ public class CategoryController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoryDetailsDto> createCategory(
-            @RequestPart("data") @Valid CategoryCreateDto categoryDto,
-            @RequestPart(name = "image", required = false) MultipartFile image
+            @ModelAttribute @Valid CategoryCreateDto categoryDto,
+            @RequestPart(name = "imageFile", required = false) MultipartFile imageFile
     ) {
         try {
             log.info("Запрос на создание новой категории: {}", categoryDto.getName());
-            CategoryDetailsDto createdCategory = categoryService.createCategory(categoryDto, image);
+            CategoryDetailsDto createdCategory = categoryService.createCategory(categoryDto, imageFile);
             return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
         } catch (IOException e) {
             log.error("Ошибка при создании категории: {}", e.getMessage());
