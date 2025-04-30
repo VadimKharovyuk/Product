@@ -16,7 +16,7 @@ public class BrandCreateRequest {
     private String name;
 
     private String description;
-    private MultipartFile banner; // Для загрузки баннера
+    private MultipartFile banner;
     private String slug;
     private String metaKeywords;
     private boolean active = true;
