@@ -35,4 +35,5 @@ public interface BrandService {
     void updateProductCount(Long brandId);
     void incrementProductCount(Long brandId);
     void decrementProductCount(Long brandId);
+    long  getBrandCount();
 }

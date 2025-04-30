@@ -80,6 +80,12 @@ public class BrandController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/public/brands/count")
+    public ResponseEntity<Long> getPublicBrandCount() {
+        long count = brandService.getBrandCount();
+        return ResponseEntity.ok(count);
+    }
+
     // Административные эндпоинты для брендов (требуют аутентификации и роли ADMIN)
 
     @GetMapping("/admin/brands")
@@ -168,6 +174,5 @@ public class BrandController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
 }

@@ -208,6 +208,12 @@ public class BrandServiceImpl implements BrandService {
         }
     }
 
+
+    @Override
+    public long getBrandCount() {
+        return brandRepository.count();
+    }
+
     // Внутренние вспомогательные методы для работы с изображениями
 
     private void uploadBannerImageInternal(Brand brand, MultipartFile file) throws IOException {
