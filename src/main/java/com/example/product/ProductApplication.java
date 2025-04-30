@@ -10,4 +10,6 @@ public class ProductApplication {
         SpringApplication.run(ProductApplication.class, args);
     }
 
+    /// добавить форму dto для создании катгории
+
 }
