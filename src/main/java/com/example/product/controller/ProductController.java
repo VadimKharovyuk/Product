@@ -30,6 +30,16 @@ public class ProductController {
     private final ProductService productService;
 
     /**
+     * Получить все продукты
+     */
+    @GetMapping
+    public ResponseEntity<List<ProductListDTO>> getAllProducts() {
+        List<ProductListDTO> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
+    }
+
+
+    /**
      * Создать новый продукт
      */
     @PostMapping
@@ -78,14 +88,6 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Получить все продукты
-     */
-    @GetMapping
-    public ResponseEntity<List<ProductListDTO>> getAllProducts() {
-        List<ProductListDTO> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
-    }
 
     /**
      * Получить продукты с пагинацией
