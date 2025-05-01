@@ -15,11 +15,7 @@ import java.util.stream.Collectors;
 @Component
 public class CategoryMapper {
 
-    /**
-     * Конвертирует CategoryCreateDto в сущность Category
-     * @param dto DTO для создания категории
-     * @return новая сущность Category (без id)
-     */
+
     public Category toEntity(CategoryCreateDto dto) {
         return Category.builder()
                 .name(dto.getName())
