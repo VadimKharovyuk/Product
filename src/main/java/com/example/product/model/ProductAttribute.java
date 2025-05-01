@@ -21,11 +21,7 @@ public class ProductAttribute {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @NotBlank
-    private String Color;
-    @NotBlank
-    private String Size;
-    @NotBlank
-    private String Material;
-
+    private String color;
+    private String size;
+    private String material;
 }

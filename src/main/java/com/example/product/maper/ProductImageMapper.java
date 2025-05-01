@@ -83,13 +83,6 @@ public class ProductImageMapper {
             image.setImageType(dto.getImageType());
         }
 
-        if (dto.getImageFile() != null) {
-            image.setImageUrl(image.getImageUrl());
-        }
-
-        if (dto.getImageId() != null) {
-            image.setImageId(dto.getImageId());
-        }
 
         if (dto.getAlt() != null) {
             image.setAlt(dto.getAlt());

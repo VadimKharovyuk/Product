@@ -1,5 +1,6 @@
-package com.example.product.controller;
+package com.example.product.config;
 
+import com.example.product.Exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,54 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    // Класс для представления ошибок в ответе API
+    public static class ErrorResponse {
+        private final int status;
+        private final String error;
+        private final String message;
+        private final LocalDateTime timestamp;
+
+        public ErrorResponse(int status, String error, String message, LocalDateTime timestamp) {
+            this.status = status;
+            this.error = error;
+            this.message = message;
+            this.timestamp = timestamp;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
         log.error("Сущность не найдена: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Ресурс не найден",
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.error("Ресурс не найден: {}", ex.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -107,36 +153,5 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    // Класс для представления ошибок в ответе API
-    public static class ErrorResponse {
-        private final int status;
-        private final String error;
-        private final String message;
-        private final LocalDateTime timestamp;
-
-        public ErrorResponse(int status, String error, String message, LocalDateTime timestamp) {
-            this.status = status;
-            this.error = error;
-            this.message = message;
-            this.timestamp = timestamp;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-
-        public String getError() {
-            return error;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public LocalDateTime getTimestamp() {
-            return timestamp;
-        }
     }
 }
