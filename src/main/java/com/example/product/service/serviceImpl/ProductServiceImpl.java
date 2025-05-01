@@ -48,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
     private final SlugUtil slugGenerator;
     private final BrandService brandService;
 
+
     @Override
     @Transactional
     public ProductDTO createProduct(ProductCreateRequest request) throws IOException {
