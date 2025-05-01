@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/public/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // Защищенные эндпоинты (требуют аутентификации)
                         .requestMatchers("/api/products/admin/**").hasAuthority("ROLE_ADMIN")
