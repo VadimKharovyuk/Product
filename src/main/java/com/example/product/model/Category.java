@@ -40,6 +40,10 @@ public class Category {
     private Integer cartAddCount = 0; // Сколько раз товары из этой категории добавляли в корзину
     private Integer orderCount = 0; // Сколько раз товары из этой категории заказывали
 
+    // Флаг популярности (можно устанавливать автоматически на основе счетчиков)
+    private boolean isPopular = false;
+
+
     // Для расчета трендов и сезонности
     private Integer lastMonthOrderCount = 0; // Заказы за последний месяц
     private Integer lastWeekOrderCount = 0; // Заказы за последнюю неделю
@@ -56,8 +60,6 @@ public class Category {
     // Дата последнего заказа товара из категории
     private LocalDateTime lastOrderDate;
 
-    // Флаг популярности (можно устанавливать автоматически на основе счетчиков)
-    private boolean isPopular = false;
 
     @Column(unique = true)
     private String slug; // URL-friendly имя (например, "electronics")

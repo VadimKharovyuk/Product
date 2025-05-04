@@ -1,10 +1,7 @@
 package com.example.product.maper;
 
 
-import com.example.product.dto.Category.CategoryCreateDto;
-import com.example.product.dto.Category.CategoryDetailsDto;
-import com.example.product.dto.Category.CategoryListDto;
-import com.example.product.dto.Category.CategoryShortDto;
+import com.example.product.dto.Category.*;
 import com.example.product.model.Category;
 import org.springframework.stereotype.Component;
 
@@ -159,5 +156,27 @@ public class CategoryMapper {
         return entities.stream()
                 .map(this::toListDto)
                 .collect(Collectors.toList());
+    }
+
+    public PopularCategoryDto toPopularCategoryDto(Category category) {
+        if (category == null) {
+            return null;
+        }
+
+        Integer popularityScore = category.getViewCount() +
+                (category.getCartAddCount() * 3) +
+                (category.getOrderCount() * 5);
+        return PopularCategoryDto.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .imageUrl(category.getImageUrl())
+                .productCount(category.getProductCount())
+                .slug(category.getSlug())
+                .popularityScore(popularityScore)
+//                 Эти поля нужно будет получать из связанных товаров
+//                 .minPrice(getMinPriceForCategory(category.getId()))
+//                 .maxPrice(getMaxPriceForCategory(category.getId()))
+//                 .hasDiscount(hasDiscountedProductsInCategory(category.getId()))
+                .build();
     }
 }
