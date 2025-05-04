@@ -3,6 +3,7 @@ package com.example.product.service.serviceImpl;
 import com.example.product.dto.Category.CategoryCreateDto;
 import com.example.product.dto.Category.CategoryDetailsDto;
 import com.example.product.dto.Category.CategoryListDto;
+import com.example.product.dto.Category.PopularCategoryDto;
 import com.example.product.maper.CategoryMapper;
 import com.example.product.model.Category;
 import com.example.product.repository.CategoryRepository;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -281,5 +284,24 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public long getCategoriesCount() {
         return categoryRepository.count();
+    }
+
+
+    @Override
+    public List<PopularCategoryDto> getPopularCategories() {
+        // Найти популярные категории на основе флага isPopular
+        List<Category> popularCategories = categoryRepository.findByIsPopularTrueAndActiveTrue();
+
+        // Если список пустой, используем алгоритмический подход
+        if (popularCategories.isEmpty()) {
+            // Получаем топ-10 категорий по метрикам популярности
+            popularCategories = categoryRepository.findTopCategoriesByPopularityMetrics(10);
+        }
+
+        return popularCategories.stream()
+                .filter(Objects::nonNull)
+                .map(categoryMapper::toPopularCategoryDto)
+                .collect(Collectors.toList());
+
     }
 }

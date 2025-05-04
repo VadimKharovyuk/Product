@@ -1,6 +1,8 @@
 package com.example.product.repository;
 
 import com.example.product.model.Category;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -90,4 +92,16 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
      */
     @Query("SELECT COUNT(c) > 0 FROM Category c WHERE c.slug = :slug AND c.id != :id")
     boolean existsBySlugAndIdNot(@Param("slug") String slug, @Param("id") Long id);
+
+
+
+    List<Category> findByIsPopularTrueAndActiveTrue();
+
+    @Query("SELECT c FROM Category c WHERE c.active = true ORDER BY " +
+            "(c.viewCount + c.cartAddCount * 3 + c.orderCount * 5) DESC")
+    List<Category> findTopCategoriesByPopularityMetrics(Pageable pageable);
+
+    default List<Category> findTopCategoriesByPopularityMetrics(int limit) {
+        return findTopCategoriesByPopularityMetrics(PageRequest.of(0, limit));
+    }
 }

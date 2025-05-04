@@ -3,6 +3,7 @@ package com.example.product.controller;
 import com.example.product.dto.Category.CategoryCreateDto;
 import com.example.product.dto.Category.CategoryDetailsDto;
 import com.example.product.dto.Category.CategoryListDto;
+import com.example.product.dto.Category.PopularCategoryDto;
 import com.example.product.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -215,4 +217,14 @@ public class CategoryController {
         long count = categoryService.getCategoriesCount();
         return ResponseEntity.ok(count);
     }
-}
+
+    @GetMapping("/public/popular")
+    public ResponseEntity<List<PopularCategoryDto>> getPopularCategories() {
+        log.info("Запрос на получение популярных категорий");
+        List<PopularCategoryDto> popularCategoryList = categoryService.getPopularCategories();
+        log.info("Количество популярных категорий: " + popularCategoryList.size());
+        return ResponseEntity.ok(popularCategoryList);
+    }
+
+
+    }

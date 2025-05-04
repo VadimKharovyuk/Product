@@ -167,4 +167,5 @@ public class ProductImageController {
             @PathVariable Long imageId) {
         return ResponseEntity.ok(productImageService.setMainProductImage(imageId));
     }
+
 }

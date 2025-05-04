@@ -4,6 +4,7 @@ package com.example.product.service;
 import com.example.product.dto.Category.CategoryCreateDto;
 import com.example.product.dto.Category.CategoryDetailsDto;
 import com.example.product.dto.Category.CategoryListDto;
+import com.example.product.dto.Category.PopularCategoryDto;
 import com.example.product.model.Category;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,4 +94,6 @@ public interface CategoryService {
      * @return количество категорий
      */
     long getCategoriesCount();
+
+    List<PopularCategoryDto> getPopularCategories();
 }
