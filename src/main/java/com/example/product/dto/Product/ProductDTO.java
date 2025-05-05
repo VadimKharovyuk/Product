@@ -45,4 +45,5 @@ public class ProductDTO {
     private String metaDescription;
     private String metaKeywords;
     private String mainImageUrl;
+    private int viewCount ;
 }

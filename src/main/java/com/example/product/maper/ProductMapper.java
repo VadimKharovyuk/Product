@@ -134,6 +134,7 @@ public class ProductMapper {
                 .metaDescription(product.getMetaDescription())
                 .metaKeywords(product.getMetaKeywords())
                 .mainImageUrl(mainImageUrl)
+                .viewCount(product.getViewCount())
                 .build();
     }
 
@@ -158,6 +159,7 @@ public class ProductMapper {
                 .mainImageUrl(mainImageUrl)
                 .brandId(product.getBrand() != null ? product.getBrand().getId() : null)
                 .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
+                .viewCount(product.getViewCount())
                 .build();
     }
 }

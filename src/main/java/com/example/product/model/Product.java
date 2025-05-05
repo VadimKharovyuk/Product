@@ -34,6 +34,7 @@ public class Product {
 
     @Column(length = 2000)
     private String description;
+    private Integer viewCount = 0;
 
     @Column(unique = true)
     private String sku; // Уникальный идентификатор товара

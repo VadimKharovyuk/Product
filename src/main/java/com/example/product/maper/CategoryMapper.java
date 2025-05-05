@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -179,4 +180,35 @@ public class CategoryMapper {
 //                 .hasDiscount(hasDiscountedProductsInCategory(category.getId()))
                 .build();
     }
+
+
+    public CategoryTreeDto toCategoryTreeDto(Category category) {
+        if (category == null) {
+            return null;
+        }
+
+        // Создаем объект CategoryTreeDto и заполняем основные поля
+        CategoryTreeDto dto = CategoryTreeDto.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .slug(category.getSlug())
+                .build();
+
+        // Рекурсивно добавляем подкатегории
+        if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
+            List<CategoryTreeDto> childrenDto = category.getSubcategories().stream()
+                    .map(this::toCategoryTreeDto)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            dto.setChildren(childrenDto);
+        } else {
+            // Если нет подкатегорий, устанавливаем пустой список
+            dto.setChildren(new ArrayList<>());
+        }
+
+        return dto;
+    }
+
+
 }

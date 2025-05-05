@@ -36,4 +36,10 @@ public interface BrandService {
     void incrementProductCount(Long brandId);
     void decrementProductCount(Long brandId);
     long  getBrandCount();
+
+
+    List<BrandListDTO> getPopularBrandsByCategory(Long id, int limit);
+
+    List<BrandListDTO> getBrandsByCategory(Long categoryId);
+
 }

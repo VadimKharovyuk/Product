@@ -22,9 +22,12 @@ import com.example.product.service.ProductService;
 
 import com.example.product.util.SlugUtil;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -329,5 +332,56 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public long getProductCountByStatus(ProductStatus status) {
         return productRepository.countByStatus(status);
+    }
+
+    @Override
+    public Page<ProductListDTO> getFilteredProducts(
+            Long categoryId,
+            List<Long> brandIds,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            Pageable pageable) {
+
+        // Создаем спецификацию для фильтрации
+        Specification<Product> spec = Specification.where(null);
+
+        // Добавляем фильтр по категории, если она указана
+        if (categoryId != null) {
+            spec = spec.and((root, query, cb) -> {
+                Join<Product, Category> categoryJoin = root.join("categories", JoinType.INNER);
+                return cb.equal(categoryJoin.get("id"), categoryId);
+            });
+        }
+
+        // Добавляем фильтр по брендам, если они указаны
+        if (brandIds != null && !brandIds.isEmpty()) {
+            spec = spec.and((root, query, cb) -> {
+                // Важно: проверяем не null, так как у продукта может не быть бренда
+                Join<Product, Brand> brandJoin = root.join("brand", JoinType.INNER);
+                return brandJoin.get("id").in(brandIds);
+            });
+        }
+
+        // Добавляем фильтр по минимальной цене, если она указана
+        if (minPrice != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.greaterThanOrEqualTo(root.get("price"), minPrice));
+        }
+
+        // Добавляем фильтр по максимальной цене, если она указана
+        if (maxPrice != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.lessThanOrEqualTo(root.get("price"), maxPrice));
+        }
+
+        // Добавляем фильтр по статусу (только активные товары)
+        spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("status"), ProductStatus.ACTIVE));
+
+        // Запрос с использованием спецификации и пагинации
+        Page<Product> productPage = productRepository.findAll(spec, pageable);
+
+        // Преобразуем результаты в DTO
+        return productPage.map(productMapper::toListDTO);
     }
 }

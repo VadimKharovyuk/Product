@@ -64,4 +64,7 @@ public interface ProductService {
 
 
     long getProductCountByStatus(ProductStatus status);
+
+
+    Page<ProductListDTO> getFilteredProducts(Long categoryId, List<Long> brandIds, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }

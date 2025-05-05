@@ -44,6 +44,7 @@ public class Category {
     private boolean isPopular = false;
 
 
+
     // Для расчета трендов и сезонности
     private Integer lastMonthOrderCount = 0; // Заказы за последний месяц
     private Integer lastWeekOrderCount = 0; // Заказы за последнюю неделю

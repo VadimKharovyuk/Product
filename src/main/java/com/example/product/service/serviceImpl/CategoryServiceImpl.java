@@ -1,9 +1,6 @@
 package com.example.product.service.serviceImpl;
 
-import com.example.product.dto.Category.CategoryCreateDto;
-import com.example.product.dto.Category.CategoryDetailsDto;
-import com.example.product.dto.Category.CategoryListDto;
-import com.example.product.dto.Category.PopularCategoryDto;
+import com.example.product.dto.Category.*;
 import com.example.product.maper.CategoryMapper;
 import com.example.product.model.Category;
 import com.example.product.repository.CategoryRepository;
@@ -21,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -289,7 +287,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<PopularCategoryDto> getPopularCategories() {
-        // Найти популярные категории на основе флага isPopular
         List<Category> popularCategories = categoryRepository.findByIsPopularTrueAndActiveTrue();
 
         // Если список пустой, используем алгоритмический подход
@@ -303,5 +300,130 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(categoryMapper::toPopularCategoryDto)
                 .collect(Collectors.toList());
 
+    }
+
+
+    @Override
+    public CategoryDetailsDto getCategoryBySlug(String slug) {
+        return categoryRepository.findBySlug(slug)
+                .map(categoryMapper::toDetailsDto)
+                .orElseThrow(() -> new EntityNotFoundException("Категория со slug '" + slug + "' не найдена"));
+    }
+
+    @Override
+    public List<CategoryListDto> getCategoryBreadcrumbs(Long id) {
+        List<CategoryListDto> breadcrumbs = new ArrayList<>();
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Категория с ID " + id + " не найдена"));
+
+        // Добавляем текущую категорию
+        breadcrumbs.add(categoryMapper.toListDto(category));
+
+        // Рекурсивно добавляем родительские категории
+        Category parent = category.getParent();
+        while (parent != null) {
+            breadcrumbs.add(0, categoryMapper.toListDto(parent)); // Добавляем в начало списка
+            parent = parent.getParent();
+        }
+
+        return breadcrumbs;
+    }
+
+    @Override
+    public List<CategoryListDto> getCategoriesByLevel(int level) {
+        if (level < 0) {
+            throw new IllegalArgumentException("Уровень вложенности не может быть отрицательным");
+        }
+
+        List<Category> categoriesByLevel;
+
+        if (level == 0) {
+            // Для корневого уровня (0) - получаем категории без родителя
+            categoriesByLevel = categoryRepository.findByParentIsNull();
+        } else {
+            // Для остальных уровней нужно найти категории с родителями соответствующего уровня
+            // Сначала получаем всех родителей предыдущего уровня
+            List<Category> parentCategories = findCategoriesByLevel(level - 1);
+
+            // Затем находим все категории, у которых родитель в этом списке
+            if (parentCategories.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            List<Long> parentIds = parentCategories.stream()
+                    .map(Category::getId)
+                    .collect(Collectors.toList());
+
+            categoriesByLevel = categoryRepository.findByParentIdIn(parentIds);
+        }
+
+        // Преобразуем в DTO и возвращаем
+        return categoriesByLevel.stream()
+                .map(categoryMapper::toListDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CategoryTreeDto> getCategoryTree() {
+        // Получаем все корневые категории (категории верхнего уровня без родителя)
+        List<Category> rootCategories = categoryRepository.findByParentIsNull();
+
+        // Преобразуем каждую корневую категорию в дерево категорий
+        return rootCategories.stream()
+                .map(this::buildCategoryTree)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CategoryListDto getCategoryShortInfo(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Категория с ID " + id + " не найдена"));
+        return categoryMapper.toListDto(category);
+    }
+
+    /**
+     * Вспомогательный метод для рекурсивного построения дерева категорий
+     */
+    private CategoryTreeDto buildCategoryTree(Category category) {
+        if (category == null) {
+            return null;
+        }
+
+        // Создаем DTO для текущей категории
+        CategoryTreeDto dto = categoryMapper.toCategoryTreeDto(category);
+
+        // Если у категории есть подкатегории, рекурсивно обрабатываем их
+        if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
+            List<CategoryTreeDto> children = category.getSubcategories().stream()
+                    .map(this::buildCategoryTree)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            dto.setChildren(children);
+        } else {
+            // Если подкатегорий нет, устанавливаем пустой список
+            dto.setChildren(new ArrayList<>());
+        }
+
+        return dto;
+    }
+
+    // Вспомогательный метод для рекурсивного поиска категорий по уровню
+    private List<Category> findCategoriesByLevel(int level) {
+        if (level == 0) {
+            return categoryRepository.findByParentIsNull();
+        }
+
+        List<Category> parentCategories = findCategoriesByLevel(level - 1);
+        if (parentCategories.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> parentIds = parentCategories.stream()
+                .map(Category::getId)
+                .collect(Collectors.toList());
+
+        return categoryRepository.findByParentIdIn(parentIds);
     }
 }

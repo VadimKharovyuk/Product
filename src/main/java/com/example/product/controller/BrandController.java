@@ -175,4 +175,11 @@ public class BrandController {
         }
     }
 
+    @GetMapping("/brands/category/{categoryId}")
+    public ResponseEntity<List<BrandListDTO>> getBrandsByCategory(@PathVariable Long categoryId) {
+        log.info("Запрос на получение брендов для категории с ID: {}", categoryId);
+        List<BrandListDTO> brands = brandService.getBrandsByCategory(categoryId);
+        return ResponseEntity.ok(brands);
+    }
+
 }

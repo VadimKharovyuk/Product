@@ -95,6 +95,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 
 
+
     List<Category> findByIsPopularTrueAndActiveTrue();
 
     @Query("SELECT c FROM Category c WHERE c.active = true ORDER BY " +
@@ -104,4 +105,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     default List<Category> findTopCategoriesByPopularityMetrics(int limit) {
         return findTopCategoriesByPopularityMetrics(PageRequest.of(0, limit));
     }
+
+    // Найти категории, у которых нет родителя (корневые категории)
+    List<Category> findByParentIsNull();
+
+    // Найти категории, родитель которых входит в указанный список
+    List<Category> findByParentIdIn(List<Long> parentIds);
 }
