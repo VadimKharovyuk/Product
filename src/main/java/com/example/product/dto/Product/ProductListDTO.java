@@ -23,4 +23,5 @@ public class ProductListDTO {
     private String mainImageUrl;
     private Long brandId;
     private String brandName;
+    private int viewCount;
 }

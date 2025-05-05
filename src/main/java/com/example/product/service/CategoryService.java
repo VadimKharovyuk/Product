@@ -1,10 +1,7 @@
 package com.example.product.service;
 
 
-import com.example.product.dto.Category.CategoryCreateDto;
-import com.example.product.dto.Category.CategoryDetailsDto;
-import com.example.product.dto.Category.CategoryListDto;
-import com.example.product.dto.Category.PopularCategoryDto;
+import com.example.product.dto.Category.*;
 import com.example.product.model.Category;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,5 +92,18 @@ public interface CategoryService {
      */
     long getCategoriesCount();
 
+
     List<PopularCategoryDto> getPopularCategories();
+
+    CategoryDetailsDto getCategoryBySlug(String slug);
+
+    List<CategoryListDto> getCategoryBreadcrumbs(Long id);
+
+    List<CategoryListDto> getCategoriesByLevel(int level);
+
+
+    List<CategoryTreeDto> getCategoryTree();
+
+    CategoryListDto getCategoryShortInfo(Long id);
+
 }

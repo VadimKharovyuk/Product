@@ -1,9 +1,8 @@
 package com.example.product.controller;
 
-import com.example.product.dto.Category.CategoryCreateDto;
-import com.example.product.dto.Category.CategoryDetailsDto;
-import com.example.product.dto.Category.CategoryListDto;
-import com.example.product.dto.Category.PopularCategoryDto;
+import com.example.product.dto.BrandDto.BrandListDTO;
+import com.example.product.dto.Category.*;
+import com.example.product.service.BrandService;
 import com.example.product.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +32,7 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final BrandService brandService;
 
     @Operation(
             summary = "Создание новой категории",
@@ -218,6 +218,7 @@ public class CategoryController {
         return ResponseEntity.ok(count);
     }
 
+
     @GetMapping("/public/popular")
     public ResponseEntity<List<PopularCategoryDto>> getPopularCategories() {
         log.info("Запрос на получение популярных категорий");
@@ -226,5 +227,63 @@ public class CategoryController {
         return ResponseEntity.ok(popularCategoryList);
     }
 
+    ///Метод для получения категории по slug - нужен для удобных URL и навигации:
+
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<CategoryDetailsDto> getCategoryBySlug(@PathVariable String slug) {
+        log.info("Запрос на получение категории по slug: {}", slug);
+        CategoryDetailsDto category = categoryService.getCategoryBySlug(slug);
+        if (category != null) {
+            categoryService.incrementViewCount(category.getId()); // Увеличиваем счетчик просмотров
+            return ResponseEntity.ok(category);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    ///Метод для получения "хлебных крошек" - отображение пути от корневой категории до текущей:
+    @GetMapping("/{id}/breadcrumbs")
+    public ResponseEntity<List<CategoryListDto>> getCategoryBreadcrumbs(@PathVariable Long id) {
+        log.info("Запрос на получение хлебных крошек для категории с ID: {}", id);
+        List<CategoryListDto> breadcrumbs = categoryService.getCategoryBreadcrumbs(id);
+        return ResponseEntity.ok(breadcrumbs);
+    }
+
+    ///Метод для получения популярных брендов в категории - нужен для быстрого доступа к популярным брендам:
+    @GetMapping("/{id}/popular-brands")
+    public ResponseEntity<List<BrandListDTO>> getPopularBrandsByCategory(@PathVariable Long id,
+                                                                         @RequestParam(defaultValue = "5") int limit) {
+        log.info("Запрос на получение популярных брендов для категории с ID: {}", id);
+        List<BrandListDTO> popularBrands = brandService.getPopularBrandsByCategory(id, limit);
+        return ResponseEntity.ok(popularBrands);
+    }
+
+
+///Получение категорий по уровню вложенности - полезно для построения меню:
+    @GetMapping("/by-level")
+    public ResponseEntity<List<CategoryListDto>> getCategoriesByLevel(@RequestParam int level) {
+        log.info("Запрос на получение категорий по уровню вложенности: {}", level);
+        List<CategoryListDto> categories = categoryService.getCategoriesByLevel(level);
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/public/tree")
+    public ResponseEntity<List<CategoryTreeDto>> getCategoryTree() {
+        log.info("Запрос на получение древовидной структуры категорий");
+        List<CategoryTreeDto> categoryTree = categoryService.getCategoryTree();
+        return ResponseEntity.ok(categoryTree);
+    }
+
+    @PostMapping("/{id}/view")
+    ResponseEntity<Void> incrementViewCount(@PathVariable Long id) {
+        categoryService.incrementViewCount(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/shortInfo/{id}")
+    public ResponseEntity<CategoryListDto> getCategoryShortInfo(@PathVariable Long id) {
+        log.info("Запрос на получение краткой информации о категории с ID: {}", id);
+        CategoryListDto category = categoryService.getCategoryShortInfo(id);
+        return ResponseEntity.ok(category);
+    }
 
     }

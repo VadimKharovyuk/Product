@@ -13,6 +13,7 @@ import com.example.product.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -215,6 +217,33 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository.count();
     }
 
+
+    @Override
+    public List<BrandListDTO> getPopularBrandsByCategory(Long categoryId, int limit) {
+        // Находим популярные бренды для категории, основываясь на количестве товаров
+        List<Object[]> results = brandRepository.findBrandsByPopularityInCategory(categoryId, PageRequest.of(0, limit));
+
+        // Преобразуем результаты в DTO
+        List<BrandListDTO> popularBrands = new ArrayList<>();
+        for (Object[] result : results) {
+            Brand brand = (Brand) result[0];
+            Long productCount = (Long) result[1];
+
+            BrandListDTO dto = brandMapper.toListDTO(brand);
+            dto.setProductCount(productCount.intValue());
+            popularBrands.add(dto);
+        }
+
+        return popularBrands;
+    }
+
+    @Override
+    public List<BrandListDTO> getBrandsByCategory(Long categoryId) {
+        List<Brand> brands = brandRepository.findBrandsByCategoryId(categoryId);
+        return brands.stream()
+                .map(brandMapper::toListDTO)
+                .collect(Collectors.toList());
+    }
     // Внутренние вспомогательные методы для работы с изображениями
 
     private void uploadBannerImageInternal(Brand brand, MultipartFile file) throws IOException {

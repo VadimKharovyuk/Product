@@ -239,4 +239,42 @@ public class ProductController {
         long count = productService.getProductCountByStatus(status);
         return ResponseEntity.ok(count);
     }
+
+    /**
+     * Получить отфильтрованные продукты по категории с применением разных фильтров
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ProductListDTO>> getFilteredProducts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) List<Long> brandIds,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "popularity") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        Pageable pageable;
+        switch (sort) {
+            case "price-asc":
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "price"));
+                break;
+            case "price-desc":
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "price"));
+                break;
+            case "name-asc":
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+                break;
+            case "name-desc":
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "name"));
+                break;
+            default: // По умолчанию сортируем по популярности
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
+        }
+
+        Page<ProductListDTO> products = productService.getFilteredProducts(
+                categoryId, brandIds, minPrice, maxPrice, pageable);
+
+        return ResponseEntity.ok(products);
+    }
+
 }
